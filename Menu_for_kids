@@ -1,6 +1,7 @@
 import pandas as pd
 from fpdf import FPDF
 
+
 # Define el menú para cada día de la semana
 menu = {
     'Lunes': ['Puré de calabaza', 'Pescado a la plancha', 'Arroz blanco', 'Plátano'],
