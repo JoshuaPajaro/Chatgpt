@@ -1,0 +1,50 @@
+import pandas as pd
+from fpdf import FPDF
+
+# Define el menú para cada día de la semana
+menu = {
+    'Lunes': ['Puré de calabaza', 'Pescado a la plancha', 'Arroz blanco', 'Plátano'],
+    'Martes': ['Ensalada de tomate', 'Pollo a la plancha', 'Puré de patata', 'Natillas'],
+    'Miércoles': ['Guisantes con jamón', 'Huevo frito', 'Pan integral', 'Fresas'],
+    'Jueves': ['Puré de zanahoria', 'Lomo a la plancha', 'Patatas fritas', 'Yogur'],
+    'Viernes': ['Ensalada de lechuga', 'Tortilla de patata', 'Pan blanco', 'Melocotón'],
+    'Sábado': ['Puré de guisantes', 'Salchichas a la plancha', 'Arroz con tomate', 'Piña'],
+    'Domingo': ['Judías con jamón', 'Merluza al horno', 'Puré de calabacín', 'Naranja']
+}
+
+# Crea un dataframe a partir del menú
+df = pd.DataFrame(menu)
+
+# Transpone el dataframe para que las columnas se conviertan en filas
+df = df.T
+
+# Crea una tabla para el menú
+class PDF(FPDF):
+    def table(self, data):
+        # Crea las cabeceras
+        self.set_font('Arial', 'B', 14)
+        for col in data.columns:
+            self.cell(30, 8, str(col), 1)
+        self.ln()
+        # Crea las filas
+        self.set_font('Arial', '', 8)
+        for row in data.values:
+            for item in row:
+                self.cell(30, 8, str(item), 1)
+            self.ln()
+
+
+pdf = PDF()
+pdf.add_page()
+pdf.set_font('Arial', 'B', 20)
+pdf.cell(40, 10, 'Menú Semanal', 0, 1, 'C')
+pdf.ln()
+# Crea una tabla para cada día de la semana
+for day in df.index:
+    pdf.set_font('Arial', 'B', 14)
+    pdf.cell(40, 10, day, 0, 1, 'C')
+    pdf.ln()
+    pdf.table(df.loc[[day]])
+    pdf.ln()
+
+pdf.output('Menu_for_kids.pdf', 'F')
