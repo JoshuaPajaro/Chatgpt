@@ -1,0 +1,56 @@
+Sub CalendarTasks()
+
+    'Definir variables
+    Dim fechaInicial As Date
+    Dim fechaFinal As Date
+    Dim RangoFechas As Range
+    Dim RangoTareas As Range
+    Dim fechaActual As Date
+    Dim tareaActual As String
+    Dim Fila As Integer
+    Dim Columna As Integer
+    
+    'Definir rango de fechas y tareas
+    Set RangoFechas = Range("A2:A" & Range("A" & Rows.Count).End(xlUp).Row)
+    Set RangoTareas = Range("B2:B" & Range("B" & Rows.Count).End(xlUp).Row)
+    
+    'Obtener fecha inicial y final
+    fechaInicial = WorksheetFunction.Min(RangoFechas)
+    fechaFinal = WorksheetFunction.Max(RangoFechas)
+    
+    'Crear calendario
+    Sheets.Add After:=ActiveSheet
+    ActiveSheet.Name = "Calendar"
+    
+    Fila = 2 'Fila en la que se comenzará a escribir el calendario
+    Columna = 2 'Columna en la que se comenzará a escribir el calendario
+    
+    For fechaActual = fechaInicial To fechaFinal
+        'Escribir fecha en la celda correspondiente
+        Cells(Fila, Columna) = fechaActual
+        
+        'Buscar tarea(s) correspondiente(s) a la fecha actual
+        tareaActual = ""
+        For Each CeldaFecha In RangoFechas
+            If CeldaFecha.Value = fechaActual Then
+                tareaActual = tareaActual & CeldaFecha.Offset(0, 1).Value & vbNewLine
+            End If
+        Next CeldaFecha
+        
+        'Escribir tarea(s) en la celda correspondiente
+        If tareaActual <> "" Then
+            Cells(Fila + 1, Columna) = tareaActual
+        End If
+        
+        'Avanzar a la siguiente columna
+        Columna = Columna + 1
+        
+        'Si se llega al final de la semana, pasar a la siguiente fila y reiniciar la columna
+        If Weekday(fechaActual) = 7 Then
+            Fila = Fila + 2
+            Columna = 2
+        End If
+        
+    Next fechaActual
+
+End Sub
